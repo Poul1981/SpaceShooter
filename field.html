@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="shooter.css">
+    <title>Space Shooter</title>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="panel">
+            <!--кнопка для проверки модального окна -->
+            <!-- <div class="popup_trigger"><a href="#">OpenPOP</a></div> -->
+            <!--  -->
+            <div class="enemy_panel">
+                <div class="enemy_title">Enemy</div>
+                <div class="bar enemy_bar" data-desc="Защитник"></div>
+            </div>
+            <div class="shooter_panel">
+                <div class="shooter_title">Shooter</div>
+                <div class="bar shooter_bar" data-desc="Враг"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="enemy"></div>
+            <div class="bomb"></div>
+            <div class="missel"></div>
+            <div class="shooter"></div>
+        </div>
+        <div class="popup">
+            <div class="popup_body">
+                <div class="popup_content">
+                    <a href="field.html" class="popup_close">X</a>
+                    <div class="popup_title">
+                        Поздравляю!
+                    </div>
+                    <div class="popup_text">
+                        <p>Вы одержали великую победу!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="jquery.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>
