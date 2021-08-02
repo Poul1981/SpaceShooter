@@ -8,27 +8,32 @@ $(function () {
     let popup = $(".popup");
     let pop_content = $(".popup_content");
     let closed = $(".popup_close");
+    let left_arrow = $(".arrow_left");
+    let right_arrow = $(".arrow_right");
 
     ////////////////////////////////
     let trigger = $(".popup_trigger");
     trigger.on("click", modalWindow);
     ////////////////////////////////
+
+    //// закрыть модальное окно
     closed.on("click", (event) => {
         popup.removeClass("active");
         pop_content.removeClass("active");
         event.preventDefault();
     });
-
-    $(window).resize(() => {
-        distance = $(".container").height() - 50;
-        console.log(distance);
-    });
+    ////////////////////////////////////////////////////////////////
+    // $(window).resize(() => {
+    //     distance = $(".container").height() - 50;
+    //     // console.log(distance);
+    // });
     ////////////////////////////////
 
-    let direction = 10;//скорость движения защитника
+    let direction = 30;//скорость движения защитника
+    let speed = 1;// скорость движения бомбы 1000px/sec
 
-    let distance = $(".container").height() - 50; //расстояние полета ракеты/бомбы
-    let duration = distance / 2;//продолжительность полета ракеты/бомбы
+    let distance = $(".container").height() - 80; //расстояние полета ракеты/бомбы
+    let duration = distance / speed;//продолжительность полета ракеты/бомбы
     console.log(distance);
     let enemy_life = 200;
     let shooter_life = 200;
@@ -50,9 +55,10 @@ $(function () {
         bomb.animate({ top: `+=${distance}px` }, duration, "linear");
         setTimeout(() => {
             //определяем результат бомбардировки
-            let bomb1 = document.querySelector(".bomb");
+            let bomb1 = document.querySelectorAll(".bomb");
+            // console.log(`bombs count ${bomb1.length}`);
             let shooter1 = document.querySelector(".shooter");
-            if (testCollision(bomb1, shooter1)) {
+            if (testCollision(bomb1[0], shooter1) || testCollision(bomb1[1], shooter1)) {
                 //бомба попала в цель
                 // bomb.remove();
                 shooter.css({
@@ -120,11 +126,68 @@ $(function () {
         if (event.which == "37" && pos > -10) {
             moveLeftOreRight(-direction, pos, container_width);
         }
+
         //button to right
         if (event.which == "39" && pos < (container_width - 80)) {
             moveLeftOreRight(direction, pos, container_width);
         }
     });
+
+    //toch-screen
+    shooter.on("touchmove", (e) => {
+        // if (down) return;
+        // down = true;
+        clearInterval(move);
+        console.log("left");
+        e.stopPropagation();
+        let pos = shooter.position().left + 72;
+        let container_width = $(".container").width();
+        let toch = parseInt(e.changedTouches[0].clientX);
+        let vector = Math.abs(toch - pos);
+        // console.log("pos = " + pos);
+        // console.log("toch = " + toch);
+        // let vector = toch - pos;
+        // if (vector < 0 && vector > -20) vector = -20;
+        // if (vector >= 0 && vector < 20) vector = 20;
+        if (pos > -10 && pos < (container_width)) {
+            // shooter.css("left", (pos + vector / 1));
+            if ((toch - pos) > 0) {
+                shooter.animate({ left: `+=${vector * 2}` }, 50, "linear");
+            }
+            else {
+                shooter.animate({ left: `-=${vector * 2}` }, 50, "linear");
+            }
+        }
+    });
+
+    shooter.on("touchend", () => {
+        shooter.stop(true);
+        down = false;
+        let pos = shooter.position().left;
+        let container_width = $(".container").width();
+        if (pos < -15) {
+            shooter.css("left", 30);
+        };
+        if (pos > container_width - 80) {
+            shooter.css("left", container_width - 100);
+        }
+    });
+
+    //toch-screen right
+    // right_arrow.on("touchmove", (e) => {
+    //     clearInterval(move);
+    //     console.log("right");
+    //     e.stopPropagation();
+    //     let pos = shooter.position().left;
+    //     let toch = parseInt(e.changedTouches[0].clientX);
+    //     let vector = ((toch - pos) <= 20) ? 0 : (toch - pos);
+    //     // if (vector <= 0) vector = 0;
+    //     let container_width = $(".container").width();
+    //     if (pos < (container_width - 80)) {
+    //         // moveLeftOreRight(direction, pos, container_width);
+    //         shooter.css("left", (pos + vector / 3));
+    //     }
+    // });
 
     //если клавиша отжата
     $("html").keyup(function (event) {
@@ -138,6 +201,15 @@ $(function () {
         }
     });
 
+    /// для тач-скрина запуск ракеты
+    $(".container").on("click", (e) => {
+        let pos = shooter.position().left;
+        lanchMissile(pos);
+        // console.log("start");
+        e.stopPropagation();
+    });
+
+
     function moveLeftOreRight(direction, pos, width) {
         if (down) return;
         down = true;
@@ -148,7 +220,7 @@ $(function () {
             if (pos < -20 || pos > (width - 80)) {
                 clearInterval(move);
             }
-        }, 40);
+        }, 100);
     }
     //запуск ракеты
     function lanchMissile(pos) {
@@ -160,6 +232,7 @@ $(function () {
         setTimeout(() => {
             //результат попадания
             let missel1 = document.querySelectorAll(".missel");
+            // console.log(`missel count ${missel1.length}`);
             let enemy1 = document.querySelector(".enemy");
             if (testCollision(missel1[1], enemy1)) {
                 //если ракета попала во врага
@@ -180,7 +253,7 @@ $(function () {
                 }, 300);
             }
             mis.remove()
-        }, duration);//430 через какое время ракета самоуничтожается
+        }, duration);//через какое время ракета самоуничтожается
     }
 })
 
