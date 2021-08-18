@@ -8,8 +8,8 @@ $(function () {
     let popup = $(".popup");
     let pop_content = $(".popup_content");
     let closed = $(".popup_close");
-    let left_arrow = $(".arrow_left");
-    let right_arrow = $(".arrow_right");
+    // let left_arrow = $(".arrow_left");
+    // let right_arrow = $(".arrow_right");
 
     ////////////////////////////////
     let trigger = $(".popup_trigger");
@@ -23,18 +23,20 @@ $(function () {
         event.preventDefault();
     });
     ////////////////////////////////////////////////////////////////
-    // $(window).resize(() => {
-    //     distance = $(".container").height() - 50;
-    //     // console.log(distance);
-    // });
+    $(window).resize(() => {
+        distance = $(".container").height() - 70;
+        console.log(`дистанция -${distance}`);
+        duration = distance / speed;
+        console.log(`продолжительность полета -${duration}`);
+    });
     ////////////////////////////////
 
-    let direction = 30;//скорость движения защитника
+    let direction = 50;//скорость движения защитника
     let speed = 1;// скорость движения бомбы 1000px/sec
 
-    let distance = $(".container").height() - 80; //расстояние полета ракеты/бомбы
+    let distance = $(".container").height() - 70; //расстояние полета ракеты/бомбы
     let duration = distance / speed;//продолжительность полета ракеты/бомбы
-    console.log(distance);
+    console.log(`продолжительность полета -${duration}`);
     let enemy_life = 200;
     let shooter_life = 200;
 
@@ -87,6 +89,10 @@ $(function () {
 
     function doDamage(bar, life) {
         bar.width(life);
+        //проконтроллировать изменение размеров контейнера!
+        distance = $(".container").height() - 70
+        ////////////////////////////////
+
         if (life < 1) {
             // alert(`${bar.attr("data-desc")} победил!`)
             let message = bar.attr("data-desc");
@@ -134,31 +140,49 @@ $(function () {
     });
 
     //toch-screen
-    shooter.on("touchmove", (e) => {
-        // if (down) return;
-        // down = true;
-        clearInterval(move);
-        console.log("left");
-        e.stopPropagation();
-        let pos = shooter.position().left + 72;
-        let container_width = $(".container").width();
-        let toch = parseInt(e.changedTouches[0].clientX);
-        let vector = Math.abs(toch - pos);
-        // console.log("pos = " + pos);
-        // console.log("toch = " + toch);
-        // let vector = toch - pos;
-        // if (vector < 0 && vector > -20) vector = -20;
-        // if (vector >= 0 && vector < 20) vector = 20;
-        if (pos > -10 && pos < (container_width)) {
-            // shooter.css("left", (pos + vector / 1));
-            if ((toch - pos) > 0) {
-                shooter.animate({ left: `+=${vector * 2}` }, 50, "linear");
-            }
-            else {
-                shooter.animate({ left: `-=${vector * 2}` }, 50, "linear");
-            }
+    // shooter.on("touchmove", (e) => {
+    //     // if (down) return;
+    //     // down = true;
+    //     clearInterval(move);
+    //     console.log("left");
+    //     e.stopPropagation();
+    //     let pos = shooter.position().left + 72;
+    //     let container_width = $(".container").width();
+    //     let toch = parseInt(e.changedTouches[0].clientX);
+    //     let vector = Math.abs(toch - pos);
+    //     // console.log("pos = " + pos);
+    //     // console.log("toch = " + toch);
+    //     // let vector = toch - pos;
+    //     // if (vector < 0 && vector > -20) vector = -20;
+    //     // if (vector >= 0 && vector < 20) vector = 20;
+    //     if (pos > -10 && pos < (container_width)) {
+    //         // shooter.css("left", (pos + vector / 1));
+    // if ((toch - pos) > 0) {
+    //     shooter.animate({ left: `+=${vector * 2}` }, 50, "linear");
+    // }
+    //         else {
+    //             shooter.animate({ left: `-=${vector * 2}` }, 50, "linear");
+    //         }
+    //     }
+    // });
+
+    // Шутер летит к месту прикосновения
+    $(".container").on("click", (e) => {
+        let posX = shooter.offset().left + 50;
+        let posY = shooter.offset().top;
+        // lanchMissile(pos);
+        // console.log("start");
+        let x = parseInt(e.clientX);
+        let y = parseInt(e.clientY);
+        let go = x - posX;
+        if (y > posY) {
+            shooter.animate({ left: `+=${go}px` }, 50, "linear");
         }
+        e.stopPropagation();
+
     });
+
+    // 
 
     shooter.on("touchend", () => {
         shooter.stop(true);
